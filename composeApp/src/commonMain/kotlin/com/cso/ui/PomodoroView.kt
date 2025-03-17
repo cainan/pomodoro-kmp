@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,40 +22,64 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cso.ui.PomodoroState.PomodoroItems
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun PomodoroTimerScreen(modifier: Modifier = Modifier) {
+fun PomodoroTimerScreen(
+    modifier: Modifier = Modifier,
+    state: PomodoroState,
+    onPomodoroItemClicked: (PomodoroItems) -> Unit = {},
+    onStartPomodoroClicked: () -> Unit = {}
+) {
     Column(
-        modifier = modifier
-            .fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Surface(
             modifier = Modifier
-                .fillMaxWidth(0.8f)
+                .fillMaxWidth(0.95f)
                 .shadow(4.dp, RoundedCornerShape(8.dp)),
             color = Color.White,
             shape = RoundedCornerShape(8.dp)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(text = "Pomodoro")
-                    Text(text = "Short Break")
-                    Text(text = "Long Break")
+                    OutlinedButton(onClick = {
+                        onPomodoroItemClicked(PomodoroItems.POMODORO)
+                    }) {
+                        Text("Pomodoro")
+                    }
+                    Spacer(modifier = Modifier.width(5.dp))
+                    OutlinedButton(
+                        onClick = {
+                            onPomodoroItemClicked(PomodoroItems.SHORT_BREAK)
+                        }) {
+                        Text("Short Break")
+                    }
+                    Spacer(modifier = Modifier.width(5.dp))
+                    OutlinedButton(onClick = {
+                        onPomodoroItemClicked(PomodoroItems.LONG_BREAK)
+                    }) {
+                        Text("Long Break")
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Text(
-                    text = "01:00",
+                    text = when (state.selectedItem) {
+                        PomodoroItems.POMODORO -> state.pomodoroDuration
+                        PomodoroItems.SHORT_BREAK -> state.shortBreakDuration
+                        PomodoroItems.LONG_BREAK -> state.longBreakDuration
+                    },
                     fontSize = 80.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -62,7 +87,7 @@ fun PomodoroTimerScreen(modifier: Modifier = Modifier) {
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Button(
-                    onClick = { /* TODO() */ },
+                    onClick = { onStartPomodoroClicked() },
                     modifier = Modifier.width(200.dp)
                 ) {
                     Text(text = "START")
@@ -75,5 +100,6 @@ fun PomodoroTimerScreen(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun PomodoroTimerScreenPreview() {
-    PomodoroTimerScreen()
+    val state = PomodoroState()
+    PomodoroTimerScreen(state = state)
 }

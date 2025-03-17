@@ -10,15 +10,19 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.cso.ui.PomodoroTimerScreen
+import com.cso.ui.PomodoroViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
+        val model = remember { PomodoroViewModel() }
+        val state = model.state
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -33,7 +37,12 @@ fun App() {
             },
             backgroundColor = Color(0xFFE57373)
         ) { paddingValues ->
-            PomodoroTimerScreen(modifier = Modifier.padding(paddingValues))
+            PomodoroTimerScreen(
+                modifier = Modifier.padding(paddingValues),
+                state = state,
+                onPomodoroItemClicked = model::onPomodoroItemClicked,
+                onStartPomodoroClicked = model::onStartPomodoroClicked
+            )
         }
     }
 }
