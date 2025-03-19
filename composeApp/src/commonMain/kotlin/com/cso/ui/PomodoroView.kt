@@ -32,7 +32,7 @@ fun PomodoroTimerScreen(
     modifier: Modifier = Modifier,
     state: PomodoroState,
     onPomodoroItemClicked: (PomodoroItems) -> Unit = {},
-    onStartPomodoroClicked: () -> Unit = {}
+    onStartClicked: () -> Unit = {}
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -93,12 +93,17 @@ fun PomodoroTimerScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                Text(
-                    text = when (state.selectedItem) {
+                val displayedText = when (state.isTimerRunning) {
+                    true -> state.timeLeft
+                    false -> when (state.selectedItem) {
                         PomodoroItems.POMODORO -> state.pomodoroDuration
                         PomodoroItems.SHORT_BREAK -> state.shortBreakDuration
                         PomodoroItems.LONG_BREAK -> state.longBreakDuration
-                    },
+                    }
+                }
+
+                Text(
+                    text = displayedText,
                     fontSize = 80.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -106,7 +111,7 @@ fun PomodoroTimerScreen(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Button(
-                    onClick = { onStartPomodoroClicked() },
+                    onClick = { onStartClicked() },
                     modifier = Modifier.width(200.dp)
                 ) {
                     Text(text = "START")

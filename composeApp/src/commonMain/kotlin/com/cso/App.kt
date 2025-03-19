@@ -41,7 +41,7 @@ fun App() {
                 modifier = Modifier.padding(paddingValues),
                 state = state,
                 onPomodoroItemClicked = model::onPomodoroItemClicked,
-                onStartPomodoroClicked = model::onStartPomodoroClicked
+                onStartClicked = model::onStartClicked
             )
         }
     }
