@@ -6,12 +6,12 @@ This is a simple pomodoro application using KMP (Kotlin Multiplatform).
 
 This is a Kotlin Multiplatform project targeting Android, Web, Desktop.
 
-## ✨ Funcionalidades
+## ✨ Features
 
 🔹 Allow user to configure focus, short and long break duration
 
 
-## 🚀 Tecnologias Utilizadas
+## 🚀 Techs
 
 - **KMP**
 - **Coroutine**
@@ -19,7 +19,7 @@ This is a Kotlin Multiplatform project targeting Android, Web, Desktop.
 
 ## 🛠 Installation and Configuration
 
-### Passos para rodar o projeto
+### Running project
 
 1. Clone this repository:
    ```sh
