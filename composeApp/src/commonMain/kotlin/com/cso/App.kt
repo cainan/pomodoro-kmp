@@ -15,21 +15,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.cso.ui.PomodoroTimerScreen
 import com.cso.ui.PomodoroViewModel
 import com.cso.ui.components.MinimalDropdownMenu
 import com.cso.ui.components.TimerSettingsPopup
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
-fun App() {
+fun App(
+    prefs: DataStore<Preferences>? = null
+) {
     MaterialTheme {
-
-        val model = remember { PomodoroViewModel() }
+        val scope = rememberCoroutineScope()
+        val model = remember { PomodoroViewModel(prefs) }
         val state = model.state
         var menuExpanded by remember { mutableStateOf(false) }
 
@@ -78,9 +86,25 @@ fun App() {
                     longBreakTime = longBreakTime,
                     onPomodoroTimeChange = { pomodoroTime = it },
                     onShortBreakTimeChange = { shortBreakTime = it },
-                    onLongBreakTimeChange = { longBreakTime = it }
+                    onLongBreakTimeChange = { longBreakTime = it },
+                    onConfirm = {
+                        scope.launch {
+                            savePreference(
+                                key = "pomodoroTime",
+                                value = pomodoroTime.toString().plus(":00"),
+                                prefs = prefs
+                            )
+                        }
+                    }
                 )
             }
         }
+    }
+}
+
+suspend fun savePreference(key: String, value: String, prefs: DataStore<Preferences>?) {
+    prefs?.edit { dataStore ->
+        val keyPref = stringPreferencesKey(key)
+        dataStore[keyPref] = value
     }
 }

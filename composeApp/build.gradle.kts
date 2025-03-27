@@ -59,6 +59,10 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlinx.coroutines.core)
+
+            api(libs.datastore.preferences)
+            api(libs.datastore)
+
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

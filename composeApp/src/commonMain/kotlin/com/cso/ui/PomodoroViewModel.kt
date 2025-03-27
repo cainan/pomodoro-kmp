@@ -3,6 +3,9 @@ package com.cso.ui
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cso.ui.PomodoroState.PomodoroItems
@@ -10,12 +13,48 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
-class PomodoroViewModel : ViewModel() {
+class PomodoroViewModel(val prefs: DataStore<Preferences>?) : ViewModel() {
     var state: PomodoroState by mutableStateOf(initialState())
         private set
+
+    init {
+        viewModelScope.launch {
+            val pomodoroDurationLoaded = prefs?.data?.map {
+                val key = stringPreferencesKey("pomodoroTime")
+                it[key] ?: ""
+            }?.collect {
+                println("-----> $it")
+                if (it.isNotEmpty()) {
+                    setState { copy(pomodoroDuration = it) }
+                }
+            }
+
+            val shortBreakDurationLoaded = prefs?.data?.map {
+                val key = stringPreferencesKey("shortBreakDuration")
+                it[key] ?: ""
+            }?.collect {
+                println("-----> $it")
+                if (it.isNotEmpty()) {
+                    setState { copy(pomodoroDuration = it) }
+                }
+            }
+
+            val longBreakDurationLoaded = prefs?.data?.map {
+                val key = stringPreferencesKey("longBreakDuration")
+                it[key] ?: ""
+            }?.collect {
+                println("-----> $it")
+                if (it.isNotEmpty()) {
+                    setState { copy(pomodoroDuration = it) }
+                }
+            }
+        }
+
+    }
 
     fun onPomodoroItemClicked(item: PomodoroItems) {
         setState { copy(selectedItem = item) }
@@ -70,6 +109,27 @@ class PomodoroViewModel : ViewModel() {
 
     private fun initialState(): PomodoroState =
         PomodoroState()
+
+
+    fun dataStore() {
+//        val scope = rememberCoroutineScope()
+
+        // save
+//        viewModelScope.launch {
+//            prefs.edit { dataStore ->
+//                val key = stringPreferencesKey("pomodoro")
+//                dataStore[key] = "xxxxxxx"
+//            }
+//        }
+
+
+        // load
+//        val loadedFromDataStore by prefs.data.map {
+//            val key = stringPreferencesKey("pomodoro")
+//            it[key] ?: ""
+//        }.collectAsState(initial = "")
+//        println("-----> $loadedFromDataStore")
+    }
 
 }
 

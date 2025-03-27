@@ -7,16 +7,21 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 
-fun main() = application {
-    val state = rememberWindowState(
-        size = DpSize(650.dp, 480.dp),
-        position = WindowPosition(300.dp, 300.dp)
-    )
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "Pomodoro-KMP",
-        state = state
-    ) {
-        App()
+fun main() {
+    val prefs = createDataStore {
+        DATA_STORE_FILE_NAME
+    }
+    application {
+        val state = rememberWindowState(
+            size = DpSize(650.dp, 480.dp),
+            position = WindowPosition(300.dp, 300.dp)
+        )
+        Window(
+            onCloseRequest = ::exitApplication,
+            title = "Pomodoro-KMP",
+            state = state
+        ) {
+            App(prefs = prefs)
+        }
     }
 }

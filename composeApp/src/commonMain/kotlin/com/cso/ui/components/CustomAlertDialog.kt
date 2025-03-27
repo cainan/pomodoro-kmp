@@ -19,7 +19,8 @@ fun TimerSettingsPopup(
     longBreakTime: Int,
     onPomodoroTimeChange: (Int) -> Unit,
     onShortBreakTimeChange: (Int) -> Unit,
-    onLongBreakTimeChange: (Int) -> Unit
+    onLongBreakTimeChange: (Int) -> Unit,
+    onConfirm: () -> Unit
 ) {
     if (showDialog) {
         AlertDialog(
@@ -41,7 +42,8 @@ fun TimerSettingsPopup(
             },
             confirmButton = {
                 TextButton(onClick = {
-                    println("Confirm")
+                    onConfirm()
+                    onDismiss()
                 }) {
                     Text("Confirm")
                 }
