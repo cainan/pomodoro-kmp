@@ -15,38 +15,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import com.cso.ui.PomodoroTimerScreen
-import com.cso.ui.PomodoroViewModel
-import com.cso.ui.components.MinimalDropdownMenu
-import com.cso.ui.components.TimerSettingsPopup
-import kotlinx.coroutines.launch
+import com.cso.ui.components.Menu
+import com.cso.ui.menu.SettingsPopup
+import com.cso.ui.menu.SettingsViewModel
+import com.cso.ui.pomodoro.PomodoroTimerScreen
+import com.cso.ui.pomodoro.PomodoroViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
 fun App(
-    prefs: DataStore<Preferences>? = null
+    prefs: DataStore<Preferences>
 ) {
     MaterialTheme {
-        val scope = rememberCoroutineScope()
         val model = remember { PomodoroViewModel(prefs) }
         val state = model.state
+
+        val settingsModel = remember { SettingsViewModel(prefs) }
+        val settingsState = settingsModel.state
+
         var menuExpanded by remember { mutableStateOf(false) }
-
-
         var showDialog by remember { mutableStateOf(false) }
-        var pomodoroTime by remember { mutableStateOf(25) }
-        var shortBreakTime by remember { mutableStateOf(5) }
-        var longBreakTime by remember { mutableStateOf(15) }
-
 
         Scaffold(
             topBar = {
@@ -57,7 +51,7 @@ fun App(
                             IconButton(onClick = { menuExpanded = true }) {
                                 Icon(Icons.Filled.MoreVert, contentDescription = "More Options")
                             }
-                            MinimalDropdownMenu(
+                            Menu(
                                 menuExpanded,
                                 onSettingsClicked = {
                                     showDialog = true
@@ -78,33 +72,16 @@ fun App(
                     onPomodoroItemClicked = model::onPomodoroItemClicked,
                     onStartClicked = model::onStartClicked
                 )
-                TimerSettingsPopup(
+                SettingsPopup(
                     showDialog = showDialog,
                     onDismiss = { showDialog = false },
-                    pomodoroTime = pomodoroTime,
-                    shortBreakTime = shortBreakTime,
-                    longBreakTime = longBreakTime,
-                    onPomodoroTimeChange = { pomodoroTime = it },
-                    onShortBreakTimeChange = { shortBreakTime = it },
-                    onLongBreakTimeChange = { longBreakTime = it },
-                    onConfirm = {
-                        scope.launch {
-                            savePreference(
-                                key = "pomodoroTime",
-                                value = pomodoroTime.toString().plus(":00"),
-                                prefs = prefs
-                            )
-                        }
-                    }
+                    state = settingsState,
+                    onPomodoroTimeChange = { settingsModel.onPomodoroTimeChange(it) },
+                    onShortBreakTimeChange = { settingsModel.onShortBreakTimeChange(it) },
+                    onLongBreakTimeChange = { settingsModel.onLongBreakTimeChange(it) },
+                    onConfirm = { settingsModel.onConfirm() }
                 )
             }
         }
-    }
-}
-
-suspend fun savePreference(key: String, value: String, prefs: DataStore<Preferences>?) {
-    prefs?.edit { dataStore ->
-        val keyPref = stringPreferencesKey(key)
-        dataStore[keyPref] = value
     }
 }

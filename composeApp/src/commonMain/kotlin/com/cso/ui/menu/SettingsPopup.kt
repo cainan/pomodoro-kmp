@@ -1,4 +1,4 @@
-package com.cso.ui.components
+package com.cso.ui.menu
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,14 +9,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.cso.ui.components.TimePicker
 
 @Composable
-fun TimerSettingsPopup(
+fun SettingsPopup(
     showDialog: Boolean,
     onDismiss: () -> Unit,
-    pomodoroTime: Int,
-    shortBreakTime: Int,
-    longBreakTime: Int,
+    state: SettingsState,
     onPomodoroTimeChange: (Int) -> Unit,
     onShortBreakTimeChange: (Int) -> Unit,
     onLongBreakTimeChange: (Int) -> Unit,
@@ -34,9 +33,9 @@ fun TimerSettingsPopup(
                         verticalArrangement = Arrangement.spacedBy(5.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        TimePicker("Pomodoro", pomodoroTime, onPomodoroTimeChange)
-                        TimePicker("Short Break", shortBreakTime, onShortBreakTimeChange)
-                        TimePicker("Long Break", longBreakTime, onLongBreakTimeChange)
+                        TimePicker("Pomodoro", state.pomodoroDuration, onPomodoroTimeChange)
+                        TimePicker("Short Break", state.shortBreakDuration, onShortBreakTimeChange)
+                        TimePicker("Long Break", state.longBreakDuration, onLongBreakTimeChange)
                     }
                 }
             },

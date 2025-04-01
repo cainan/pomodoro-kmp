@@ -1,16 +1,14 @@
-package com.cso.ui
+package com.cso.ui.pomodoro
 
 data class PomodoroState(
-    val pomodoroDuration: String = "25:00",
-    val shortBreakDuration: String = "05:00",
-    val longBreakDuration: String = "15:00",
+    val pomodoroDuration: Int = 25,
+    val shortBreakDuration: Int = 5,
+    val longBreakDuration: Int = 15,
     val selectedItem: PomodoroItems = PomodoroItems.POMODORO,
     val isTimerRunning: Boolean = false,
-    val timeLeft: String = "00:00"
+    val timeLeft: Long = 0
 ) {
-
     enum class PomodoroItems {
         POMODORO, SHORT_BREAK, LONG_BREAK
     }
-
 }

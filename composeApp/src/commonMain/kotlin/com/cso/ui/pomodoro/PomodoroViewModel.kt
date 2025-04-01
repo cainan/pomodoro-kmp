@@ -1,55 +1,43 @@
-package com.cso.ui
+package com.cso.ui.pomodoro
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cso.ui.PomodoroState.PomodoroItems
+import com.cso.ui.pomodoro.PomodoroState.PomodoroItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
-class PomodoroViewModel(val prefs: DataStore<Preferences>?) : ViewModel() {
+class PomodoroViewModel(val prefs: DataStore<Preferences>) : ViewModel() {
     var state: PomodoroState by mutableStateOf(initialState())
         private set
 
     init {
+
         viewModelScope.launch {
-            val pomodoroDurationLoaded = prefs?.data?.map {
-                val key = stringPreferencesKey("pomodoroTime")
-                it[key] ?: ""
-            }?.collect {
-                println("-----> $it")
-                if (it.isNotEmpty()) {
+            prefs.data.collect {
+
+                val pomodoroPreference = intPreferencesKey("pomodoroTime")
+                it[pomodoroPreference]?.let {
                     setState { copy(pomodoroDuration = it) }
                 }
-            }
 
-            val shortBreakDurationLoaded = prefs?.data?.map {
-                val key = stringPreferencesKey("shortBreakDuration")
-                it[key] ?: ""
-            }?.collect {
-                println("-----> $it")
-                if (it.isNotEmpty()) {
-                    setState { copy(pomodoroDuration = it) }
+                val shortBreakPreference = intPreferencesKey("shortBreakDuration")
+                it[shortBreakPreference]?.let {
+                    setState { copy(shortBreakDuration = it) }
                 }
-            }
 
-            val longBreakDurationLoaded = prefs?.data?.map {
-                val key = stringPreferencesKey("longBreakDuration")
-                it[key] ?: ""
-            }?.collect {
-                println("-----> $it")
-                if (it.isNotEmpty()) {
-                    setState { copy(pomodoroDuration = it) }
+                val longBreakPreference = intPreferencesKey("longBreakDuration")
+                it[longBreakPreference]?.let {
+                    setState { copy(longBreakDuration = it) }
                 }
             }
         }
@@ -68,15 +56,15 @@ class PomodoroViewModel(val prefs: DataStore<Preferences>?) : ViewModel() {
             PomodoroItems.LONG_BREAK -> state.longBreakDuration
         }
 
-        setState { copy(isTimerRunning = true, timeLeft = countdown) }
+        setState { copy(isTimerRunning = true, timeLeft = countdown.toMillis()) }
 
         viewModelScope.launch {
             coroutineScope {
                 startTimer(
-                    total = countdown.textToMillis(),
+                    total = countdown.toMillis(),
                     task = {
-                        println(it.millisToText())
-                        setState { copy(timeLeft = it.millisToText()) }
+                        println(it)
+                        setState { copy(timeLeft = it) }
                     },
                     onFinish = {
                         println("finished")
@@ -111,31 +99,10 @@ class PomodoroViewModel(val prefs: DataStore<Preferences>?) : ViewModel() {
         PomodoroState()
 
 
-    fun dataStore() {
-//        val scope = rememberCoroutineScope()
-
-        // save
-//        viewModelScope.launch {
-//            prefs.edit { dataStore ->
-//                val key = stringPreferencesKey("pomodoro")
-//                dataStore[key] = "xxxxxxx"
-//            }
-//        }
-
-
-        // load
-//        val loadedFromDataStore by prefs.data.map {
-//            val key = stringPreferencesKey("pomodoro")
-//            it[key] ?: ""
-//        }.collectAsState(initial = "")
-//        println("-----> $loadedFromDataStore")
-    }
-
 }
 
-fun String.textToMillis(): Long {
-    val split = this.split(":")
-    return (split[0].toInt() * 60 + split[1].toInt()) * 1000L
+fun Int.toMillis(): Long {
+    return (this * 60) * 1000L
 }
 
 fun String.formatToTwoDigits(): String {
@@ -151,4 +118,9 @@ fun Long.millisToText(): String {
     val minutes = totalSeconds.div(60).toString().formatToTwoDigits()
     val seconds = totalSeconds.rem(60).toString().formatToTwoDigits()
     return "${minutes}:${seconds}"
+}
+
+fun Int.toFormattedText(): String {
+    val minutes = this.toString().formatToTwoDigits()
+    return "${minutes}:00"
 }

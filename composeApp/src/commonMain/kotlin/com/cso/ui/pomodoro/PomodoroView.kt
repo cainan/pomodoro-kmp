@@ -1,4 +1,4 @@
-package com.cso.ui
+package com.cso.ui.pomodoro
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cso.ui.PomodoroState.PomodoroItems
+import com.cso.ui.pomodoro.PomodoroState.PomodoroItems
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -94,11 +94,11 @@ fun PomodoroTimerScreen(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 val displayedText = when (state.isTimerRunning) {
-                    true -> state.timeLeft
+                    true -> state.timeLeft.millisToText()
                     false -> when (state.selectedItem) {
-                        PomodoroItems.POMODORO -> state.pomodoroDuration
-                        PomodoroItems.SHORT_BREAK -> state.shortBreakDuration
-                        PomodoroItems.LONG_BREAK -> state.longBreakDuration
+                        PomodoroItems.POMODORO -> state.pomodoroDuration.toFormattedText()
+                        PomodoroItems.SHORT_BREAK -> state.shortBreakDuration.toFormattedText()
+                        PomodoroItems.LONG_BREAK -> state.longBreakDuration.toFormattedText()
                     }
                 }
 
