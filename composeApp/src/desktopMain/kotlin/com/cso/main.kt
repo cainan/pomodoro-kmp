@@ -1,5 +1,6 @@
 package com.cso
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -21,7 +22,11 @@ fun main() {
             title = "Pomodoro-KMP",
             state = state
         ) {
-            App(prefs = prefs)
+            App(
+                prefs = prefs,
+                darkTheme = isSystemInDarkTheme(),
+                dynamicColor = false,
+            )
         }
     }
 }
